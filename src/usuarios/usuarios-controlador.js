@@ -40,5 +40,15 @@ module.exports = {
     } catch (erro) {
       res.status(500).json({ erro: erro });
     }
+  },
+
+  buscaPorId: async (req, res) => {
+    const usuario = await Usuario.buscaPorId(req.params.id);
+    try {
+      //await usuario.lista();
+      res.status(200).send(usuario);
+    } catch (erro) {
+      res.status(500).json({ erro: erro });
+    }
   }
 };
