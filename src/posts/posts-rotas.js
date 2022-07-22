@@ -1,5 +1,5 @@
 const postsControlador = require('./posts-controlador');
-const { middlewaresAutenticacao } = require('../usuarios')
+const  { middlewaresAutenticacao } = require('../usuarios')
 
 module.exports = app => {
   app

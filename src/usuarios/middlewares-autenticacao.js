@@ -48,6 +48,6 @@ module.exports = {
                 req.user = usuario;
                 return next();
             }
-        )
+        )(req, res, next)
     }
 }
