@@ -1,4 +1,5 @@
 const passport = require('passport');
+const { GeoReplyWith } = require('redis');
 
 module.exports = {
     local: (req, res, next) => {
@@ -8,11 +9,11 @@ module.exports = {
             (erro, usuario, info) => {
 
                 if(erro && erro.name === 'InvalidArgumentError') { 
-                    return res.status(401).json({ erro: erro.message }) 
+                    return res.status(401).json({ erro: erro.message });
                 }
 
                 if(erro) {
-                    return res.status(500).json({ erro: erro.message })
+                    return res.status(500).json({ erro: erro.message });
                 }
 
                 if(!usuario) {
@@ -24,5 +25,29 @@ module.exports = {
             }
         )(req, res, next);
 
+    },
+
+    bearer: (req, res, next) => {
+        passport.authenticate(
+            'bearer',
+            { session: false },
+            (erro, usuario, info) => {
+
+                if(erro && erro.name === 'JsonWebTokenError'){
+                    return res.status(401).json({ erro: erro.message });
+                }
+
+                if(erro) {
+                    return res.status(500).json({ erro: erro.message })
+                }
+
+                if(!usuario){
+                    return res.status(401).json();
+                }
+
+                req.user = usuario;
+                return next();
+            }
+        )
     }
 }

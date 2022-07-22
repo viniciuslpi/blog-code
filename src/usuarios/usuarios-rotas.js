@@ -16,5 +16,5 @@ module.exports = app => {
   app
     .route('/usuario/:id')
     .get(usuariosControlador.buscaPorId)
-    .delete(passport.authenticate('bearer', { session: false }), usuariosControlador.deleta);
+    .delete(middlewaresAutenticacao.bearer, usuariosControlador.deleta);
 };
