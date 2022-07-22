@@ -3,6 +3,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError } = require('../erros');
 const bcrypt = require('bcrypt');
+const BearerStrategy = require('passport-http-bearer');
+const jwt = require('jsonwebtoken');
+const keyJWT = process.env.KEY_JWT;
 
 passport.use(
     new LocalStrategy({
@@ -22,15 +25,29 @@ passport.use(
     })
 )
 
-function verificaUsuario(usuario){
-    if(!usuario){
+function verificaUsuario(usuario) {
+    if (!usuario) {
         throw new InvalidArgumentError('Não existe usuário com esse email.');
     }
 }
 
 async function verificaSenha(senha, senhaHash) {
     const senhaValida = await bcrypt.compare(senha, senhaHash);
-    if(!senhaValida) {
+    if (!senhaValida) {
         throw new InvalidArgumentError('Email ou senha inválidos.')
     }
 }
+
+passport.use(
+    new BearerStrategy(
+        async (token, done) => {
+            try {
+                const payload = jwt.verify(token, keyJWT);
+                const usuario = await Usuario.buscaPorId(payload.id);
+                done(null, usuario);
+            } catch (error) {
+                done(erro);
+            }
+        }
+    )
+)
