@@ -21,7 +21,6 @@ passport.use(
         } catch (erro) {
             done(erro)
         }
-
     })
 )
 
@@ -46,7 +45,7 @@ passport.use(
                 const usuario = await Usuario.buscaPorId(payload.id);
                 done(null, usuario);
             } catch (error) {
-                done(erro);
+                done(error);
             }
         }
     )
