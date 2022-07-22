@@ -1,13 +1,17 @@
 const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError, InternalServerError } = require('../erros');
 const jwt = require('jsonwebtoken');
+const keyJWT = process.env.KEY_JWT;
 
 function criaTokenJWT(usuario){
   const payload = {
     id: usuario.id
   }
 
-  const token = jwt.sign(payload, 'senha-secreta');
+  // COMANDO PARA GERAR UMA CHAVE ALEATORIA USANDO CRYPTO
+  //  node -e "console.log(require('crypto').randomBytes(256).toString('base64'))" 
+
+  const token = jwt.sign(payload, keyJWT);
   return token;
 }
 
