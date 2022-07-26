@@ -11,7 +11,7 @@ function criaTokenJWT(usuario){
   // COMANDO PARA GERAR UMA CHAVE ALEATORIA USANDO CRYPTO
   //  node -e "console.log(require('crypto').randomBytes(256).toString('base64'))" 
 
-  const token = jwt.sign(payload, keyJWT);
+  const token = jwt.sign(payload, keyJWT, { expiresIn: '1s' });
   return token;
 }
 
