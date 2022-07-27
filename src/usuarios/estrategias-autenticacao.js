@@ -43,7 +43,7 @@ passport.use(
             try {
                 const payload = jwt.verify(token, keyJWT);
                 const usuario = await Usuario.buscaPorId(payload.id);
-                done(null, usuario);
+                done(null, usuario, { token: token });
             } catch (error) {
                 done(error);
             }
