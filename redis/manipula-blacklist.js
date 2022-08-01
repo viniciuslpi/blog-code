@@ -24,5 +24,4 @@ module.exports = {
         const resultado = await existsAsync(tokenHash);
         return resultado === 1;
     }
-
 }

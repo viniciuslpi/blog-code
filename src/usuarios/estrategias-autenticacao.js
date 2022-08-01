@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const BearerStrategy = require('passport-http-bearer');
 const jwt = require('jsonwebtoken');
 const keyJWT = process.env.KEY_JWT;
+const blacklist = require('../../redis/manipula-blacklist');
 
 passport.use(
     new LocalStrategy({
@@ -37,10 +38,19 @@ async function verificaSenha(senha, senhaHash) {
     }
 }
 
+async function verificaTokenBlackList(token) {
+    const tokenBlacklist = await blacklist.contemToken(token);
+   if(tokenBlacklist){
+    throw new jwt.JsonWebTokenError('Token inválido por logout');
+   }
+}
+
+
 passport.use(
     new BearerStrategy(
         async (token, done) => {
             try {
+                await verificaTokenBlackList(token);
                 const payload = jwt.verify(token, keyJWT);
                 const usuario = await Usuario.buscaPorId(payload.id);
                 done(null, usuario, { token: token });
