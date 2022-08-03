@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const BearerStrategy = require('passport-http-bearer');
 const jwt = require('jsonwebtoken');
 const keyJWT = process.env.KEY_JWT;
-const blacklist = require('../../redis/manipula-blacklist');
+const blacklist = require('../../redis/blacklist-acess-token');
 
 passport.use(
     new LocalStrategy({
