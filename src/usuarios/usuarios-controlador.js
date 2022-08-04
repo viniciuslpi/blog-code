@@ -2,9 +2,9 @@ const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError, InternalServerError } = require('../erros');
 const jwt = require('jsonwebtoken');
 const keyJWT = process.env.KEY_JWT;
-const blacklist = require('../../redis/blacklist-acess-token');
 const crypto = require('crypto');
 const moment = require('moment');
+const blacklist = require('../../redis/blacklist-acess-token');
 const allowlistRefreshToken = require('../../redis/allowlist-refresh-token');
 
 function criaTokenJWT(usuario) {

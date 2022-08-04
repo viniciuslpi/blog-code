@@ -17,7 +17,7 @@ module.exports = lista => {
         },
         async contemChave(chave){
             const resultado = await existsAsync(chave);
-            return resultado === '1';
+            return resultado === 1;
         },
         async deleta(chave){
             await delAsync(chave);
