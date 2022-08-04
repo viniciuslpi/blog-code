@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError } = require('../erros');
 const bcrypt = require('bcrypt');
-const BearerStrategy = require('passport-http-bearer');
+const BearerStrategy = require('passport-http-bearer').Strategy;
 const jwt = require('jsonwebtoken');
 const keyJWT = process.env.KEY_JWT;
 const blacklist = require('../../redis/blacklist-acess-token');
@@ -40,9 +40,9 @@ async function verificaSenha(senha, senhaHash) {
 
 async function verificaTokenBlackList(token) {
     const tokenBlacklist = await blacklist.contemToken(token);
-   if(tokenBlacklist){
-    throw new jwt.JsonWebTokenError('Token inválido por logout');
-   }
+    if (tokenBlacklist) {
+        throw new jwt.JsonWebTokenError('Token inválido por logout');
+    }
 }
 
 

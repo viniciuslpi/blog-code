@@ -1,5 +1,4 @@
 const usuariosControlador = require('./usuarios-controlador');
-const passport = require('passport');
 const middlewaresAutenticacao = require('./middlewares-autenticacao');
 
 module.exports = app => {
@@ -21,4 +20,9 @@ module.exports = app => {
     .route('/usuario/:id')
     .get(usuariosControlador.buscaPorId)
     .delete(middlewaresAutenticacao.bearer, usuariosControlador.deleta);
+
+  app
+    .route('/usuario/atualiza_token')
+    .post(middlewaresAutenticacao.refresh, usuariosControlador.login)
+
 };

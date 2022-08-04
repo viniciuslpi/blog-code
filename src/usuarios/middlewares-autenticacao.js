@@ -1,21 +1,39 @@
 const passport = require('passport');
+const Usuario = require('./usuarios-modelo');
+const { InvalidArgumentError } = require('../erros');
+const allowlistRefreshToken = require('../../redis/allowlist-refresh-token');
+
+async function verificaRefreshToken(refreshToken) {
+    if (!refreshToken) {
+        throw new InvalidArgumentError('RefreshToken nao enviado!');
+    }
+    const id = await allowlistRefreshToken.buscaValor(refreshToken);
+    if (!id) {
+        throw new InvalidArgumentError('RefreshToken é invalido!');
+    }
+    return id;
+}
+
+async function invalidaRefreshToken(refreshToken) {
+    await allowlistRefreshToken.deleta(refreshToken);
+}
 
 module.exports = {
-    local: (req, res, next) => {
+    local (req, res, next){
         passport.authenticate(
             'local',
             { session: false },
             (erro, usuario, info) => {
 
-                if(erro && erro.name === 'InvalidArgumentError') { 
+                if (erro && erro.name === 'InvalidArgumentError') {
                     return res.status(401).json({ erro: erro.message });
                 }
 
-                if(erro) {
+                if (erro) {
                     return res.status(500).json({ erro: erro.message });
                 }
 
-                if(!usuario) {
+                if (!usuario) {
                     return res.status(401).json();
                 }
 
@@ -25,26 +43,25 @@ module.exports = {
         )(req, res, next);
 
     },
-
-    bearer: (req, res, next) => {
+    bearer (req, res, next) {
         passport.authenticate(
             'bearer',
             { session: false },
             (erro, usuario, info) => {
 
-                if(erro && erro.name === 'JsonWebTokenError'){
+                if (erro && erro.name === 'JsonWebTokenError') {
                     return res.status(401).json({ erro: erro.message });
                 }
 
-                if(erro && erro.name === 'TokenExpiredError') {
+                if (erro && erro.name === 'TokenExpiredError') {
                     return res.status(401).json({ erro: erro.message, expiradoEm: erro.expiredAt })
                 }
 
-                if(erro) {
+                if (erro) {
                     return res.status(500).json({ erro: erro.message })
                 }
 
-                if(!usuario){
+                if (!usuario) {
                     return res.status(401).json();
                 }
 
@@ -53,5 +70,24 @@ module.exports = {
                 return next();
             }
         )(req, res, next)
+    },
+    async refresh (req, res, next){
+        console.log(req.body)
+
+        try {
+            const { refreshToken } = req.body;
+            console.log(refreshToken)
+            const id = await verificaRefreshToken(refreshToken);
+            await invalidaRefreshToken(refreshToken);
+            req.user = await Usuario.buscaPorId(id);
+            return next();
+        } catch (erro) {
+            if(erro.name === 'InvalidArgumentError') {
+                return res.status(401).json({ erro: erro.message });
+            }
+            return res.status(500).json({ erro: erro.message });
+        }
+
+
     }
 }
