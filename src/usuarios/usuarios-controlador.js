@@ -15,7 +15,7 @@ function criaTokenJWT(usuario) {
   // COMANDO PARA GERAR UMA CHAVE ALEATORIA USANDO CRYPTO
   //  node -e "console.log(require('crypto').randomBytes(256).toString('base64'))" 
 
-  const token = jwt.sign(payload, keyJWT, { expiresIn: '15m' });
+  const token = jwt.sign(payload, keyJWT, { expiresIn: '15s' });
   return token;
 }
 
@@ -28,7 +28,7 @@ async function criaTokenOpaco(usuario) {
 
 
 module.exports = {
-  adiciona: async (req, res) => {
+  async adiciona (req, res){
     const { nome, email, senha } = req.body;
 
     try {
@@ -53,7 +53,7 @@ module.exports = {
     }
   },
 
-  login: async (req, res) => {
+  async login (req, res) {
     try {
       const acessToken = criaTokenJWT(req.user);
       const refreshToken = await criaTokenOpaco(req.user);
@@ -65,22 +65,22 @@ module.exports = {
 
   },
 
-  logout: async (req, res) => {
+  async logout (req, res) {
     try {
       const token = req.token;
       await blacklist.adiciona(token);
-      res.status(204).send();
+      res.status(204).json({ message: 'Voce executou o logout'});
     } catch (erro) {
       res.status(500).json({ erro: erro.message })
     }
   },
 
-  lista: async (req, res) => {
+  async lista (req, res) {
     const usuarios = await Usuario.lista();
     res.json(usuarios);
   },
 
-  deleta: async (req, res) => {
+  async deleta (req, res) {
     const usuario = await Usuario.buscaPorId(req.params.id);
     try {
       await usuario.deleta();
@@ -90,10 +90,9 @@ module.exports = {
     }
   },
 
-  buscaPorId: async (req, res) => {
-    const usuario = await Usuario.buscaPorId(req.params.id);
+  async buscaPorId (req, res) {
     try {
-      //await usuario.lista();
+      const usuario = await Usuario.buscaPorId(req.params.id);
       res.status(200).send(usuario);
     } catch (erro) {
       res.status(500).json({ erro: erro });

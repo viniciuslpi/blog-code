@@ -41,7 +41,7 @@ async function verificaSenha(senha, senhaHash) {
 async function verificaTokenBlackList(token) {
     const tokenBlacklist = await blacklist.contemToken(token);
     if (tokenBlacklist) {
-        throw new jwt.JsonWebTokenError('Token inválido por logout');
+        throw new jwt.JsonWebTokenError('Token invalidado por logout');
     }
 }
 

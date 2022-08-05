@@ -72,11 +72,8 @@ module.exports = {
         )(req, res, next)
     },
     async refresh (req, res, next){
-        console.log(req.body)
-
         try {
             const { refreshToken } = req.body;
-            console.log(refreshToken)
             const id = await verificaRefreshToken(refreshToken);
             await invalidaRefreshToken(refreshToken);
             req.user = await Usuario.buscaPorId(id);
