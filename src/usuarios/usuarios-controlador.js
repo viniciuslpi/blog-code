@@ -1,30 +1,7 @@
 const Usuario = require('./usuarios-modelo');
 const { InvalidArgumentError, InternalServerError } = require('../erros');
-const jwt = require('jsonwebtoken');
-const keyJWT = process.env.KEY_JWT;
-const crypto = require('crypto');
-const moment = require('moment');
 const blacklist = require('../../redis/blacklist-acess-token');
-const allowlistRefreshToken = require('../../redis/allowlist-refresh-token');
-
-function criaTokenJWT(usuario) {
-  const payload = {
-    id: usuario.id
-  }
-
-  // COMANDO PARA GERAR UMA CHAVE ALEATORIA USANDO CRYPTO
-  //  node -e "console.log(require('crypto').randomBytes(256).toString('base64'))" 
-
-  const token = jwt.sign(payload, keyJWT, { expiresIn: '15s' });
-  return token;
-}
-
-async function criaTokenOpaco(usuario) {
-  const tokenOpaco = crypto.randomBytes(24).toString('hex');
-  const dataExpiracao = moment().add(5, 'd').unix();
-  await allowlistRefreshToken.adiciona(tokenOpaco, usuario.id, dataExpiracao);
-  return tokenOpaco;
-}
+const tokens = require('./tokens');
 
 
 module.exports = {
@@ -55,8 +32,8 @@ module.exports = {
 
   async login (req, res) {
     try {
-      const acessToken = criaTokenJWT(req.user);
-      const refreshToken = await criaTokenOpaco(req.user);
+      const acessToken = tokens.acess.cria(req.user.id);
+      const refreshToken = await tokens.refresh.cria(req.user.id);
       res.set('Authorization', acessToken);
       res.status(200).json({ refreshToken });
     } catch (erro) {
