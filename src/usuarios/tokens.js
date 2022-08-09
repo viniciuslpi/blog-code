@@ -29,6 +29,10 @@ async function verificaTokenBlackList(token, blacklist) {
     }
 }
 
+function invalidaTokenJWT(token, blacklist) {
+    return blacklist.adiciona(token);
+}
+
 async function criaTokenOpaco(id, [tempoQuantidade, tempoUnidade], allowlist) {
     const tokenOpaco = crypto.randomBytes(24).toString('hex');
     const dataExpiracao = moment().add(tempoQuantidade, tempoUnidade).unix();
@@ -43,6 +47,11 @@ async function verificaTokenOpaco(token, nome, allowlist) {
     return id;
 }
 
+async function invalidaTokenOpaco(refreshToken, allowlist) {
+    await allowlist.deleta(refreshToken);
+}
+
+
 function verificaTokenEnviado(token, nome) {
     if (!token) {
         throw new InvalidArgumentError(`${nome} nao enviado!`);
@@ -55,7 +64,6 @@ function verificaTokenValido(id, nome) {
     }
 }
 
-
 module.exports = {
     acess: {
         lista: blacklistAcessToken,
@@ -65,6 +73,9 @@ module.exports = {
         },
         verifica(token) {
             return verificaTokenJwt(token, this.lista);
+        },
+        invalida(token){
+            return invalidaTokenJWT(token, this.lista);
         }
     },
     refresh: {
@@ -76,6 +87,9 @@ module.exports = {
         },
         verifica(token) {
             return verificaTokenOpaco(token, this.nome, this.lista);
+        },
+        async invalida(token){
+            return await invalidaTokenOpaco(token, this.lista);
         }
     }
 
