@@ -80,9 +80,9 @@ module.exports = {
       );
     });
   },
-  async modificaEmailVerificado(usuario, emailVerificado){
+  modificaEmailVerificado: async (usuario, emailVerificado) => {
     try {
-      await dbRun(`UPDATE usuarios SET emailVerificado = ? WHERE id = ?`, [
+      await db.run(`UPDATE usuarios SET emailVerificado = ? WHERE id = ?`, [
         emailVerificado,
         usuario.id
       ])

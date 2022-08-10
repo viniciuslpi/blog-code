@@ -22,7 +22,7 @@ module.exports = {
       await usuario.adicionaSenha(senha);
       await usuario.adiciona();
 
-      const endereco = geraEndereco('/usuario/verifica/', usuario.id);
+      const endereco = geraEndereco('/usuario/verifica_email/', usuario.id);
       const emailVerificacao = new EmailVerificacao(usuario, endereco);
       emailVerificacao.enviaEmail().catch(console.log);
 
@@ -64,6 +64,17 @@ module.exports = {
     const usuarios = await Usuario.lista();
     res.json(usuarios);
   },
+  
+  async verificaEmail (req, res) {
+    try { 
+      const usuario = await Usuario.buscaPorId(req.params.id);
+      await usuario.verificaEmail();
+      res.status(200).json();
+    } catch (erro) {
+      res.status(500).json({ erro: erro.message });
+    }
+  }
+  ,
 
   async deleta (req, res) {
     const usuario = await Usuario.buscaPorId(req.params.id);
