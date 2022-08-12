@@ -23,6 +23,10 @@ async function verificaTokenJwt(token, blacklist) {
 }
 
 async function verificaTokenBlackList(token, blacklist) {
+    if(!blacklist){
+        return ;
+    }
+
     const tokenBlacklist = await blacklist.contemToken(token);
     if (tokenBlacklist) {
         throw new jwt.JsonWebTokenError('Token invalidado por logout');
@@ -91,6 +95,16 @@ module.exports = {
         async invalida(token){
             return await invalidaTokenOpaco(token, this.lista);
         }
+    },
+    verificacaoEmail: {
+        nome: 'token de verificacao de email',
+        expiracao: [1, 'h'],
+        cria(id) {
+            return criaTokenJWT(id, this.expiracao);
+        },
+        verifica(token) {
+            return verificaTokenJwt(token);
+        },
     }
 
 }
